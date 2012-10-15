@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<!--  basics -->
+	<groupId>edu.devry.web</groupId>
+	<artifactId>parent</artifactId>
+	<name>${company.name} - Parent</name>
+	<description>${company.name} - Parent</description>
+	
+	<!--  version / packaging -->
+	<packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	
+	<!--  customer properties -->
+	<properties>
+		<company.name>DeVry</company.name>
+		<!-- - adding explicit UTF-8 conversion to avoid OS X MacRoman encoding 
+			"creepage" - as per http://www.redleopard.com/2009/04/macroman-encoding-creeps-into-maven/ -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!--  cq specific properties -->
+		<cq.build.finalName>${project.build.directory}/${project.build.finalName}.zip</cq.build.finalName>		
+		<cq.host>localhost</cq.host>
+		<cq.port>4502</cq.port>
+		<cq.user>admin</cq.user>
+		<cq.password>admin</cq.password>
+		<module.prefix>devry</module.prefix>
+		<slf4j.version>1.7.1</slf4j.version>		
+		<junit.version>4.10</junit.version>		
+	</properties>
+	
+	<!--  build / plugins and configuration -->
+	<build>
+
+	
+		<plugins>
+		
+		    <!--   basic plugins  -->
+			<!--  Maven Cleanup -->
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-clean-plugin</artifactId>
+	        <version>2.5</version>
+	        <executions>
+	          <execution>
+	            <id>auto-clean</id>
+	            <phase>initialize</phase>
+	            <goals>
+	              <goal>clean</goal>
+	            </goals>
+	          </execution>
+	        </executions>
+	      </plugin>		
+		      		    
+			<!-- Maven Compiler Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+					
+			<!-- Maven Source Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--   base plugins  -->
+			
+			<!-- Setting up the CQ plugin -->
+			<plugin>
+				<groupId>com.day.jcr.vault</groupId>
+				<artifactId>maven-vault-plugin</artifactId>
+				<version>0.0.10</version>
+				<extensions>true</extensions>
+			</plugin>	
+			
+		
+
+		</plugins>
+		<pluginManagement>
+			<!-- Setting up plugins. They won't be executed unless they are specifically included in the pom. -->
+			<plugins>
+				<!-- Creating a CQ package -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.3</version>
+					<executions>
+						<execution>
+							<id>create-distribution</id>
+							<phase>package</phase>
+							<goals><goal>single</goal></goals>
+							<configuration>
+								<descriptors><descriptor>${basedir}/assembly/${project.artifactId}.xml</descriptor></descriptors>
+								<appendAssemblyId>false</appendAssemblyId>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- plugins to make an osgi bundle out of the jar  -->
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<version>2.3.7</version>
+					<extensions>true</extensions>
+					<configuration>
+						<instructions>
+							<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+							<Export-Package>${osgi.package.export};version=${project.version}</Export-Package>
+							<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+							<Embed-Transitive>true</Embed-Transitive>
+							<Import-Package>${osgi.package.import};resolution:=optional</Import-Package>
+						</instructions>
+					</configuration>
+                    <dependencies>
+						<dependency>
+							<groupId>org.apache.felix</groupId>
+							<artifactId>org.osgi.core</artifactId>
+							<version>1.4.0</version>
+						</dependency>
+                    </dependencies>
+				</plugin>
+				<!-- Mavin Src Plugin -->
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-scr-plugin</artifactId>
+					<version>1.8.0</version>
+					<executions>
+						<execution>
+							<id>generate-scr-scrdescriptor</id>
+							<goals><goal>scr</goal></goals>
+							<configuration>
+								<!-- <processAnnotations>true</processAnnotations> -->
+								<!-- <strictMode>true</strictMode> -->
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+			
+		</pluginManagement>		
+				
+	</build>
+	
+	<!--  provide custom / cq repository locations  -->
+    <repositories>
+        <repository>
+            <id>adobe</id>
+            <name>Adobe Repository</name>
+            <url>http://repo.adobe.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <!-- provide custome / cq plugin repository -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>adobe-plugins</id>
+            <name>Adobe Plugin Repository</name>
+            <url>http://repo.adobe.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    
+	<!-- distribution management. Comment out for now -->
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>xxxxxx</id>
+			<name>DeVry Nexus</name>
+			<url>http://xxx.xxx.xx:1234/xxx/xxx/</url>
+		</repository>
+		<site>
+			<id>${project.artifact}-site</id>
+			<url>file:///xxx/xxxx/xxxx/xxx</url>
+		</site>
+	</distributionManagement>
+	
+		
+	<!--  profiles. we may include environment specific profiles  -->
+	<profiles>
+		<!-- Default Profile: Build all modules -->
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>core/multistep</module>
+				<module>ui/multistep</module>
+			</modules>
+		</profile>
+		
+		<!-- JSP Compile Profile -->
+		<profile>
+           <!-- Compile JSP pages -->
+			<id>jspc</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.sling</groupId>
+						<artifactId>maven-jspc-plugin</artifactId>
+						<version>2.0.6</version>
+						<configuration>
+							<workDirectory>${basedir}/src/main/content/jcr_root</workDirectory>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>javax.jcr</groupId>
+								<artifactId>jcr</artifactId>
+								<version>2.0</version>
+							</dependency>
+							<dependency>
+								<groupId>javax.servlet</groupId>
+								<artifactId>jstl</artifactId>
+								<version>1.2</version>
+							</dependency>
+							<dependency>
+								<groupId>taglibs</groupId>
+								<artifactId>standard</artifactId>
+								<version>1.1.2</version>
+							</dependency>
+
+							<dependency>
+								<groupId>org.apache.sling</groupId>
+								<artifactId>org.apache.sling.scripting.jsp</artifactId>
+								<version>2.0.18</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.sling</groupId>
+								<artifactId>org.apache.sling.scripting.jsp.taglib</artifactId>
+								<version>2.1.0</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.sling</groupId>
+								<artifactId>org.apache.sling.atom.taglib</artifactId>
+								<version>0.9.0-tlp-R830217</version>
+							</dependency>
+			
+							<dependency>
+								<groupId>com.day.commons</groupId>
+								<artifactId>day-commons-text</artifactId>
+								<version>1.1.10</version>
+							</dependency>
+							<dependency>
+								<groupId>com.day.cq</groupId>
+								<artifactId>cq-commons</artifactId>
+								<version>5.6.0</version>
+							</dependency>
+							<dependency>
+								<groupId>com.day.cq</groupId>
+								<artifactId>cq-i18n</artifactId>
+								<version>5.4.4</version>
+							</dependency>
+							<dependency>
+								<groupId>com.day.cq</groupId>
+								<artifactId>cq-tagging</artifactId>
+								<version>5.5.0</version>
+							</dependency>
+							
+							<dependency>
+								<groupId>com.day.cq.wcm</groupId>
+								<artifactId>cq-wcm-api</artifactId>
+								<version>5.5.2</version>
+							</dependency>
+							<dependency>
+								<groupId>com.day.cq.wcm</groupId>
+								<artifactId>cq-wcm-commons</artifactId>
+								<version>5.5.4</version>
+							</dependency>
+							<dependency>
+								<groupId>com.day.cq.wcm</groupId>
+								<artifactId>cq-wcm-foundation</artifactId>
+								<version>5.5.16</version>
+							</dependency>
+							
+							<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-lang3</artifactId>
+								<version>3.1</version>
+							</dependency>
+							<!-- 
+							<dependency>
+								<groupId>com.day.cq</groupId>
+								<artifactId>cq-personalization</artifactId>
+								<version>5.6</version>
+							</dependency>
+							<dependency>
+								<groupId>com.day.cq.collab</groupId>
+								<artifactId>cq-collab-commons</artifactId>
+								<version>5.5.2</version>
+							</dependency>
+							<dependency>
+								<groupId>com.day.cq</groupId>
+								<artifactId>cq-widgets</artifactId>
+								<version>5.4.6</version>
+							</dependency>
+							 -->
+						</dependencies> 
+						
+						<executions>
+							<execution>
+								<id>compile-jsp</id>
+								<goals><goal>jspc</goal></goals>
+								<configuration>
+									<!--<failOnError>false</failOnError>-->
+									<showSuccess>true</showSuccess>
+									<jasperClassDebugInfo>true</jasperClassDebugInfo>
+									<sourceDirectory>${basedir}/src/main/content/jcr_root</sourceDirectory>
+									<outputDirectory>${project.build.directory}/jspc</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+	</profiles>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+	</dependencies>	
+	<dependencyManagement>
+		<dependencies> 	
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.scr.annotations</artifactId>
+				<version>1.7.0</version>
+				<scope>provided</scope>
+			</dependency>
+		</dependencies> 
+	</dependencyManagement>
+
+</project>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>edu.devry.web.core</groupId>
+		<artifactId>edu-devry-web-core</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
+	<groupId>edu.devry.web.core.multistep</groupId>
+	<artifactId>edu-devry-web-core-multistep</artifactId>
+	
+	<packaging>bundle</packaging>
+	<name>${company.name} - MuliStep - Core</name>
+	<description>Core Bundle</description>
+	<properties>
+		<!-- Override this for deploy to drop the bundle in a specific directory -->
+		<sling.url.suffix>apps/multistep/install</sling.url.suffix>
+	</properties>	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-scr-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<!-- Export packages that should be visible to other bundles and JSPs -->
+						<Export-Package>
+                            edu.devry.web.*
+                        </Export-Package>
+						<Import-Package>*;resolution:=optional</Import-Package>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Sling-Test-Regexp>.*Test</Sling-Test-Regexp>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

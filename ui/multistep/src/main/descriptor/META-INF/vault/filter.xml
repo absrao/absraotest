@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/apps/multistep"/>
+    <filter root="/etc/designs/multistep"/>
+    <filter root="/content/multistep"/>
+</workspaceFilter>

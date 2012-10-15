@@ -1,0 +1,82 @@
+
+	#lbux_accordion_container{
+		width:100%;	
+		clear:both;
+		
+	}#lbux_accordion_container:after	        {content: ".";display: block;height: 0;clear: both;visibility: hidden;}
+	#lbux_accordion_container		        {*zoom: 1;}
+	
+	#lbux_accordion_content{
+		width:100%;
+		padding: 10px 0;	
+		display:block;
+	}#lbux_accordion_content:after	        {content: ".";display: block;height: 0;clear: both;visibility: hidden;}
+	#lbux_accordion_content		        {*zoom: 1;}
+	
+	h2.lbux_trigger {
+		padding: 0 0px 0 30px;
+		margin: 0 0 5px 0;
+		background: #f2f2f2 url(../images/toggle_bg.png) no-repeat;
+		height: 26px;
+		line-height:26px;
+		font-weight: normal;
+		cursor: pointer;
+		-moz-border-radius:10px;
+		-webkit-border-radius:10px;
+		border-radius:10px 10px 10px 10px;
+	}
+	
+	h2.lbux_trigger:hover{
+		background-position: left bottom;
+	}
+	
+	h2.lbux_trigger a {
+		text-decoration: none;
+		display: block;
+		font-size:14px;
+	}
+	h2.lbux_trigger a:hover { }
+	h2.lbux_active {background-position: left bottom;} /*--When toggle is triggered, it will shift the image to the bottom to show its "opened" state--*/
+	h2.lbux_active:hover {background-position: left top;}
+	
+	
+	.lbux_toggle_container {
+		margin: 0 0 5px;
+		padding: 0;
+		overflow: hidden;
+		font-size: 12px;
+		width: 100%;
+		clear: both;	
+	}
+	
+	.lbux_toggle_container .lbux_block {
+		padding: 10px;
+	}
+	
+	.lbux_toggle_container a.lbux_block {
+		padding: 0px;
+	}
+	
+	.lbux_toggle_container .lbux_block h2 {}
+	
+	.lbux_toggle_container .lbux_image_right{
+		float: right; padding: 0 0px 10px 10px; 
+	}
+	
+	.lbux_toggle_container .lbux_image_block {display:block;margin-bottom:10px;}
+	
+	
+	.lbux_button_link{
+		background: #f2f2f2;
+		height: 32px;
+		line-height:32px;	
+		display:inline-block;
+		padding: 0 10px;
+		margin-bottom:5px;
+		text-decoration:none;
+	}
+	
+	a:hover.lbux_button_link{
+				
+			}
+

@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>edu.devry.web</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
+	<groupId>edu.devry.web.ui</groupId>
+	<artifactId>edu-devry-web-ui</artifactId>
+	
+	<packaging>pom</packaging>
+
+	<build>
+        <resources>
+            <!-- filter meta information to set some properties like version -->
+            <resource>
+				<targetPath>${project.build.directory}/assembly</targetPath>
+				<directory>${basedir}/src/main/content</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/.vlt</exclude>
+                    <exclude>**/.vltignore</exclude>
+                    <exclude>**/*.iml</exclude>
+                    <exclude>**/.classpath</exclude>
+                    <exclude>**/.project</exclude>
+                    <exclude>**/.DS_Store</exclude>
+                    <exclude>libs/**</exclude>
+                    <exclude>META-INF/**</exclude>
+                </excludes>
+            </resource>
+            <resource>
+				<targetPath>${project.build.directory}/assembly</targetPath>
+				<directory>${basedir}/src/main/descriptor</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/.vlt</exclude>
+                    <exclude>**/.vltignore</exclude>
+                    <exclude>**/*.iml</exclude>
+                    <exclude>**/.classpath</exclude>
+                    <exclude>**/.project</exclude>
+                    <exclude>**/.DS_Store</exclude>
+                </excludes>
+            </resource>
+		</resources>
+	</build>
+
+	<profiles>
+		<!-- profile to deploy to CQ from maven during install phase -->
+        <profile>
+            <id>cq-deploy</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.day.jcr.vault</groupId>
+						<artifactId>maven-vault-plugin</artifactId>
+	                    <extensions>true</extensions>
+	                    <executions>
+	                        <execution>
+	                            <id>vault-install</id>
+	                            <phase>install</phase><goals><goal>install</goal></goals>
+	                            <configuration>
+	                                <userId>${cq.user}</userId>
+	                                <password>${cq.password}</password>
+	                                <targetURL>http://${cq.host}:${cq.port}/crx/packmgr/service.jsp</targetURL>
+        							<packageFile>${cq.build.finalName}</packageFile>
+	                            </configuration>
+	                        </execution>
+	                    </executions>
+					</plugin>
+				</plugins>
+			</build>
+        </profile>
+	</profiles>
+</project>
